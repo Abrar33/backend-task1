@@ -41,3 +41,7 @@ const getInventoryByProduct = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch inventory' });
   }
 };
+module.exports={
+    upsertInventory,
+    getInventoryByProduct
+}
