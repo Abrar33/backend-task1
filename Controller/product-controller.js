@@ -47,7 +47,54 @@ const getProductById = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch product' });
   }
 };
+
+
+const updateProduct = async (req, res) => {
+  const productId = req.params.id;
+  const updates = req.body;
+
+  try {
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+
+    // Optional: Only allow seller who created the product or admin to update
+    if (req.user.role !== 'admin' && product.seller.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Forbidden: You cannot update this product' });
+    }
+
+    Object.assign(product, updates); // Merge updates into product
+    await product.save();
+
+    res.json({ message: 'Product updated successfully', product });
+  } catch (err) {
+    console.error('Update product error:', err.message);
+    res.status(500).json({ error: 'Failed to update product' });
+  }
+};
+const deleteProduct = async (req, res) => {
+  const productId = req.params.id;
+
+  try {
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+
+    // Only admin or the seller who owns the product can delete
+    if (req.user.role !== 'admin' && product.seller.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Forbidden: You cannot delete this product' });
+    }
+
+    await Product.findByIdAndDelete(productId);
+    res.json({ message: 'Product deleted successfully' });
+  } catch (err) {
+    console.error('Delete product error:', err.message);
+    res.status(500).json({ error: 'Failed to delete product' });
+  }
+};
+
 module.exports = {
   createProduct,
   getAllProducts,
-  getProductById};
+  getProductById,
+  updateProduct,
+  deleteProduct
+};
