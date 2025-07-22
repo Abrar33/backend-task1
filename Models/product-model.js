@@ -27,12 +27,17 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-
-  images: [
-    {
-      type: String // URLs or file paths
-    }
-  ],
+variations:[
+  {
+    images:[
+      {type: String, required: true}
+    ]
+  },{
+    size: { type: String },
+    color: { type: String, required: true }
+  }
+]
+ ,
 
   seller: {
     type: mongoose.Schema.Types.ObjectId,
