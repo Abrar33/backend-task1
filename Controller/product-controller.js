@@ -1,6 +1,6 @@
 const Product = require("../Models/product-model");
 
-// Create a new product with variations
+// 🔹 Create Product (with variations)
 const createProduct = async (req, res) => {
   const {
     name,
@@ -8,15 +8,22 @@ const createProduct = async (req, res) => {
     price,
     category,
     stock,
-    images,
     variations
   } = req.body;
 
   try {
     const sellerId = req.user.id;
 
-    if (!name || !description || !price || !category || !images || !Array.isArray(variations)) {
-      return res.status(400).json({ error: "Missing required product fields or variations" });
+    // Basic validation
+    if (
+      !name ||
+      !description ||
+      !price ||
+      !category ||
+      !Array.isArray(variations) ||
+      variations.length === 0
+    ) {
+      return res.status(400).json({ error: "Missing required fields or variations" });
     }
 
     const product = new Product({
@@ -25,7 +32,6 @@ const createProduct = async (req, res) => {
       price,
       category,
       stock,
-      images,
       variations,
       seller: sellerId
     });
@@ -38,10 +44,10 @@ const createProduct = async (req, res) => {
   }
 };
 
-// Get all products
+// 🔹 Get All Products
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate("seller", "name email"); // 🚫 exclude password/role
+    const products = await Product.find().populate("seller", "name email");
     res.json(products);
   } catch (err) {
     console.error("Get products error:", err.message);
@@ -49,7 +55,7 @@ const getAllProducts = async (req, res) => {
   }
 };
 
-// Get product by ID
+// 🔹 Get Product by ID
 const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate("seller", "name email");
@@ -61,7 +67,7 @@ const getProductById = async (req, res) => {
   }
 };
 
-// Update a product
+// 🔹 Update Product
 const updateProduct = async (req, res) => {
   const productId = req.params.id;
   const updates = req.body;
@@ -84,7 +90,7 @@ const updateProduct = async (req, res) => {
   }
 };
 
-// Delete a product
+// 🔹 Delete Product
 const deleteProduct = async (req, res) => {
   const productId = req.params.id;
 
